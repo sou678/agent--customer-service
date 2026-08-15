@@ -13,10 +13,10 @@ from langchain.messages import AnyMessage, HumanMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
-from tools import tools
+from tools.tools import tools
 
 DB_PATH = "agent_memory.db"
-agent=None
+supervisor=None
 
 # TODO 1: 定义状态 + 初始化模型 + 组装图
 # MessagesState / model / bind_tools / llm_call / should_continue / graph
@@ -63,9 +63,9 @@ graph.add_edge("tool_node","llm_call")
 # TODO 2: lifespan —— 启动时初始化 agent，关闭时关连接
 @asynccontextmanager
 async def lifespan(app):
-    global agent
+    global supervisor
     conn = await aiosqlite.connect(DB_PATH)
-    agent = graph.compile(checkpointer=AsyncSqliteSaver(conn))
+    supervisor = graph.compile(checkpointer=AsyncSqliteSaver(conn))
     yield
     await conn.close()
 
@@ -79,7 +79,7 @@ class ChatRequest(BaseModel):
 # TODO 4: /chat 非流式端点
 @app.post("/chat")
 async def chat(req: ChatRequest):
-    result =await agent.ainvoke(
+    result =await supervisor.ainvoke(
         {"messages":[HumanMessage(req.message)]},
         config={"configurable":{
             "thread_id":str(req.user_id)
@@ -93,7 +93,7 @@ async def chat_stream(req: ChatRequest):
     async def event_stream():
         config = {"configurable": {"thread_id": str(req.user_id)}}
         input_data = {"messages": [HumanMessage(content=req.message)]}
-        async for event in agent.astream_events(input_data, config=config, version="v2"):
+        async for event in supervisor.astream_events(input_data, config=config, version="v2"):
             if event["event"] == "on_chat_model_stream":
                 content = event["data"]["chunk"].content
                 if content:
@@ -106,7 +106,7 @@ async def chat_stream(req: ChatRequest):
 @app.get("/history/{user_id}")
 async def history(user_id: int):
     config = {"configurable": {"thread_id": str(user_id)}}
-    state = await agent.aget_state(config)
+    state = await supervisor.aget_state(config)
     messages = state.values.get("messages", []) if state.values else []
     return {
         "user_id": user_id,

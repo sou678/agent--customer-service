@@ -4,11 +4,22 @@ os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 from langchain.tools import tool
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
-from db import db_query_one
+from db.connection import db_query_one
+from langchain_community.tools import TavilySearchResults
+import json
 
-with open("messages.txt", "r", encoding="UTF-8") as f:
+with open("data/messages.txt", "r", encoding="UTF-8") as f:
     raw = f.read()
 KNOWLEDGE=[line.strip() for line in raw.split("\n") if line.strip()]
+
+with open("config/config.json","r",encoding="utf-8") as f:
+    config=json.load(f)
+
+# 联网搜索工具
+search_web = TavilySearchResults(
+    max_results=3,
+    tavily_api_key=config["tavily_api_key"],   # 建议放 config 或环境变量
+)
 
 embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-zh-v1.5")
 # 建向量库（内存版，每次运行重建）
@@ -33,5 +44,7 @@ def search_knowledge(query: str) -> str:
         return "知识库中未找到相关内容。"
     return "\n\n---\n\n".join(d.page_content for d in docs)
 
+
 # 工具列表（导出）
-tools = [query_order, search_knowledge]
+tools = [query_order, search_knowledge, search_web]
+

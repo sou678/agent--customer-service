@@ -1,8 +1,10 @@
 """初始化数据库：建库、建表、插入测试数据"""
 import json
 import pymysql
+from db.connection import db_query,db_query_one
+
 # TODO 1: 读 db_config.json
-with open("db_config.json","r",encoding="utf-8") as f:
+with open("config/db_config.json","r",encoding="utf-8") as f:
     DB_CONFIG=json.load(f)
 
 
@@ -44,10 +46,4 @@ def init_db():
     db.commit()
     db.close()
     print("MySQL 数据库初始化完成")
-
-
-
-
-if __name__ == "__main__":
-    init_db()
 

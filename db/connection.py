@@ -4,7 +4,7 @@ import pymysql
 from contextlib import contextmanager
 
 # TODO 1: 读 db_config.json
-with open("db_config.json","r",encoding="utf-8") as f:
+with open("config/db_config.json","r",encoding="utf-8") as f:
     DB_CONFIG=json.load(f)
 
 
