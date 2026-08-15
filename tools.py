@@ -22,7 +22,7 @@ vectorstore = Chroma.from_texts(
 @tool
 def query_order(order_id: str) -> str:
     """查询订单"""          
-    return db_query_one("select * from orders where order_id=%s",(order_id,))                # ← 用 db_query_one 查 orders 表
+    return db_query_one("select * from orders where order_id=%s",(order_id,))      # 用 db_query_one 查 orders 表
 
 # TODO 2: search_knowledge —— RAG 检索
 @tool
