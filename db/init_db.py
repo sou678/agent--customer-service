@@ -36,9 +36,6 @@ def init_db():
     if cursor.fetchone()[0] == 0:
         test_data = [
             ("ORD1001", "张三", "Pro版年费会员", 999.00, "已发货", "2026-08-10"),
-            ("ORD1002", "李四", "基础版月费", 99.00, "待付款", "2026-08-12"),
-            ("ORD1003", "王五", "Pro版月费", 99.00, "已完成", "2026-08-13"),
-            ("ORD1004", "赵六", "年费会员", 999.00, "退款中", "2026-08-14"),
         ]
         cursor.executemany(
             "INSERT INTO orders VALUES (%s, %s, %s, %s, %s, %s)", test_data

@@ -34,7 +34,7 @@ def route_to_order(question: str) -> str:
     return "order_agent"
 @tool
 def route_to_knowledge(question: str) -> str:
-    """公司政策、产品信息问题，转给知识专家。"""
+    """数据处理，个人信息等数据相关问题，转给数据分析专家。"""
     return "knowledge_agent"
 @tool
 def route_to_search(question: str) -> str:

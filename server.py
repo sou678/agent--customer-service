@@ -25,7 +25,7 @@ class MessagesState(TypedDict):
     messages:Annotated[list[AnyMessage],operator.add]
 
 # TODO 2: 读 config.json，初始化模型，bind_tools
-with open("config.json","r",encoding="utf-8") as f:
+with open("config/config.json","r",encoding="utf-8") as f:
     config=json.load(f)
 
 model=init_chat_model(
