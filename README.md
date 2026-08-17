@@ -135,7 +135,7 @@ python server.py
 
 ```
 请输入问题：
-退换货政策是什么？            → 知识 Agent 检索 RAG
+xxx的联系方式是什么？         → 知识 Agent 检索 RAG
 最近有什么 AI 新闻？          → 搜索 Agent 联网搜索
 ```
 
